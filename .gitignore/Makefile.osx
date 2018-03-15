@@ -1,0 +1,34 @@
+SDK=/Developer/SDKs/MacOSX10.3.9.sdk
+CFLAGS = -Wall `sdl-config --cflags` -isysroot $(SDK) -DHAVE_MUS_RW -DSDLGUI
+CXXFLAGS = $(CFLAGS) -Wno-non-virtual-dtor -Wno-conversion
+LDFLAGS = -F/Library/Frameworks `sdl-config --libs` -framework SDL_image -framework SDL_mixer -isysroot $(SDK) -Wl,-syslibroot,$(SDK)
+
+
+%.o : %.m
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+cadog: Actor.o ArmyGaem.o Coin.o EnemyManager.o Enemy_Bill.o Enemy_Blob.o Enemy_Blob_2.o Enemy_Blob_Dumb.o Enemy_Cocoa.o Enemy_Figaro.o Enemy_Parrot.o Enemy_Sheppy.o Enemy_Spikey.o Menu.o NumberDraw.o PackManager.o Player.o Signs.o WorldMap.o sdlapp.o sdlgl.o rwops.o Log.o nibgui.o
+	$(CXX) -o $@ $+ $(LDFLAGS)
+
+Cadog.app: cadog
+	mkdir -p $@/Contents/MacOS
+	mkdir -p $@/Contents/Resources/English.lproj
+	cp cadog $@/Contents/MacOS
+	cp Info.plist $@/Contents
+	cp InfoPlist.strings $@/Contents/Resources/English.lproj
+	cp -R gui.nib $@/Contents/Resources
+	cp icon.icns $@/Contents/Resources
+	cp -R Data $@/Contents/Resources
+	cp -R ~/sdlmain/SDLMain.nib $@/Contents/Resources
+
+cadog-osx.dmg: Cadog.app
+	./makedmg.sh
+
+makepak: makepak.o PackManager.o
+	$(CXX) -o $@ $+ $(LDFLAGS)
+
+clean:
+	rm -rf cadog *.o Cadog.app cadog-osx.dmg
+
+.PHONY: Cadog.app cadog-osx.dmg
+

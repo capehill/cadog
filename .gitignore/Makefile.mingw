@@ -1,0 +1,14 @@
+CXXFLAGS = -Wall `sdl-config --cflags` -Wno-non-virtual-dtor -Wno-conversion
+LDFLAGS = `sdl-config --libs` -lSDL_image -lSDL_mixer -lopengl32 -lglu32 -mwindows
+
+
+cadog.exe: Actor.o ArmyGaem.o Coin.o EnemyManager.o Enemy_Bill.o Enemy_Blob.o Enemy_Blob_2.o Enemy_Blob_Dumb.o Enemy_Cocoa.o Enemy_Figaro.o Enemy_Parrot.o Enemy_Sheppy.o Enemy_Spikey.o Menu.o NumberDraw.o PackManager.o Player.o Signs.o WorldMap.o sdlapp.o sdlgl.o rwops.o Log.o icon.o
+	$(CXX) -o $@ $+ $(LDFLAGS)
+
+icon.o: icon.rc
+	$(WINDRES) -o $@ $+
+
+
+clean:
+	rm -f cadog.exe *.o core core.*
+
